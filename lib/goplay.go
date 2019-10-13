@@ -1,34 +1,34 @@
 package lib
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"net/http"
-	"net/url"
 	"time"
 )
 
-type Computer struct {
+type GoplayComputer struct {
+	httpClient http.Client
 }
 
-func NewComputer() *Computer {
-	return &Computer{}
-}
-
-func (c *Computer) Run(code string) (string, error) {
-	values := url.Values{}
-	values.Add("version", "2")
-	values.Add("body", code)
-
-	httpClient := http.Client{
-		Timeout: 5 * time.Second,
+func NewGoplay(httpClient *http.Client) *GoplayComputer {
+	if httpClient == nil {
+		httpClient = &http.Client{
+			Timeout: 5 * time.Second,
+		}
 	}
+	return &GoplayComputer{httpClient: *httpClient}
+}
 
-	resp, err := httpClient.PostForm("https://play.golang.org/compile", values)
+func (c *GoplayComputer) Run(code string) (string, error) {
+	codeReader := bytes.NewReader([]byte(code))
+	resp, err := c.httpClient.Post("https://goplay.space/compile", "text/plain", codeReader)
 	if err != nil {
 		return "", err
 	}
 	defer resp.Body.Close()
+
 	if resp.StatusCode != 200 {
 		return "", errors.New("calculation failed")
 	}
@@ -38,7 +38,11 @@ func (c *Computer) Run(code string) (string, error) {
 		Events []struct {
 			Message string `json:"Message"`
 			Kind    string `json:"Kind"`
+			Delay   int    `json:"Delay"`
 		} `json:"Events"`
+		Status      int  `json:"Status"`
+		IsTest      bool `json:"IsTest"`
+		TestsFailed int  `json:"TestsFailed"`
 	}
 
 	r := &calcResult{}

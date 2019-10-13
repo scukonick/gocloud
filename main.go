@@ -13,7 +13,7 @@ func main() {
 		panic("wtf")
 	}
 
-	comp := lib.NewComputer()
+	comp := lib.NewDefault(nil)
 	result, err := comp.Run(string(code))
 	if err != nil {
 		os.Stderr.Write([]byte(err.Error()))
