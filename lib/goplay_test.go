@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-func TestComputer_Run(t *testing.T) {
+func TestGoplayComputer_Run(t *testing.T) {
 	type args struct {
 		code string
 	}
@@ -25,10 +25,21 @@ func main() {
 	fmt.Println("Hello, playground")
 }
 `}, "Hello, playground\n", false},
+		{"", args{`package main
+
+import (
+	"fmt"
+)
+
+func main() {
+	fmt.Println("Hello, playground")
+	fmt.Println("Hello, playground")
+}
+`}, "Hello, playground\nHello, playground\n", false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := &Computer{}
+			c := NewGoplay(nil)
 			got, err := c.Run(tt.args.code)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Run() error = %v, wantErr %v", err, tt.wantErr)
