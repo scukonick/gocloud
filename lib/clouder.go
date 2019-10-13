@@ -9,10 +9,16 @@ import (
 )
 
 type Computer struct {
+	httpClient http.Client
 }
 
-func NewComputer() *Computer {
-	return &Computer{}
+func NewComputer(httpClient *http.Client) *Computer {
+	if httpClient == nil {
+		httpClient = &http.Client{
+			Timeout: 5 * time.Second,
+		}
+	}
+	return &Computer{httpClient: *httpClient}
 }
 
 func (c *Computer) Run(code string) (string, error) {
@@ -20,11 +26,7 @@ func (c *Computer) Run(code string) (string, error) {
 	values.Add("version", "2")
 	values.Add("body", code)
 
-	httpClient := http.Client{
-		Timeout: 5 * time.Second,
-	}
-
-	resp, err := httpClient.PostForm("https://play.golang.org/compile", values)
+	resp, err := c.httpClient.PostForm("https://play.golang.org/compile", values)
 	if err != nil {
 		return "", err
 	}
