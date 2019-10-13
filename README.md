@@ -33,8 +33,18 @@ import (
 )
 ...
 ...
-comp := lib.NewComputer()
+comp := lib.NewComputer(nil)
 result, err := comp.Run(code) // code - это твой код на Golang
 ```
+или
+```go
+package main
 
-
+import (
+	"github.com/scukonick/gocloud/lib"
+)
+...
+...
+comp := lib.NewComputer(&http.Client{Timeout: 30 * time.Second})
+result, err := comp.Run(code) // code - это твой код на Golang
+```
