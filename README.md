@@ -7,7 +7,7 @@
 
 #### Пример:
 ```bash
-go install github.com/scukonick/gocloud
+go get github.com/scukonick/gocloud
 echo 'package main
 
 import "fmt"
